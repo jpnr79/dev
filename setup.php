@@ -1,8 +1,8 @@
 <?php
 
 define('PLUGIN_DEV_VERSION', '2.1.0');
-define('PLUGIN_DEV_MIN_GLPI', '10.0.0');
-define('PLUGIN_DEV_MAX_GLPI', '10.2.0');
+define('PLUGIN_DEV_MIN_GLPI', '11.0.0');
+define('PLUGIN_DEV_MAX_GLPI', '12.0.0');
 
 function plugin_init_dev()
 {
@@ -55,6 +55,9 @@ function plugin_version_dev()
             'glpi' => [
                 'min' => PLUGIN_DEV_MIN_GLPI,
                 'max' => PLUGIN_DEV_MAX_GLPI
+            ],
+            'php' => [
+                'min' => '8.4.0'
             ]
         ]
     ];
@@ -66,6 +69,11 @@ function plugin_dev_check_prerequisites()
         $version = preg_replace('/^((\d+\.?)+).*$/', '$1', GLPI_VERSION);
         $matchMinGlpiReq = version_compare($version, PLUGIN_DEV_MIN_GLPI, '>=');
         $matchMaxGlpiReq = version_compare($version, PLUGIN_DEV_MAX_GLPI, '<');
+        // PHP version check
+        if (version_compare(PHP_VERSION, '8.4.0', '<')) {
+            echo 'This plugin requires PHP >= 8.4.0.';
+            return false;
+        }
         if (!$matchMinGlpiReq || !$matchMaxGlpiReq) {
             echo vsprintf(
                 'This plugin requires GLPI >= %1$s and < %2$s.',

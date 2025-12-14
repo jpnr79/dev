@@ -1,3 +1,7 @@
+// Required by GLPI: plugin_version_dev alias
+function plugin_version_dev() {
+    return plugin_version_dev();
+}
 if (!defined('GLPI_ROOT')) {
     include('../../../inc/includes.php');
 }

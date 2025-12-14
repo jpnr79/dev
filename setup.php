@@ -1,3 +1,6 @@
+if (!defined('GLPI_ROOT')) {
+    include('../../../inc/includes.php');
+}
 <?php
 
 define('PLUGIN_DEV_VERSION', '2.1.0');
@@ -15,7 +18,7 @@ function plugin_init_dev()
       PluginDevProfiler::$disabled = true;
    }
 
-    if (!isCommandLine() && $_SESSION['glpipalette'] === 'darker') {
+    if (php_sapi_name() !== 'cli' && isset($_SESSION['glpipalette']) && $_SESSION['glpipalette'] === 'darker') {
         $PLUGIN_HOOKS['add_css']['dev'][] = 'css/dev-dark.css';
     } else {
         $PLUGIN_HOOKS['add_css']['dev'][] = 'css/dev.css';
@@ -23,7 +26,7 @@ function plugin_init_dev()
     $PLUGIN_HOOKS['add_javascript']['dev'][] = 'js/dev.js';
     $PLUGIN_HOOKS['add_javascript']['dev'][] = 'js/dom_validation.js';
 
-    if ($_SESSION['glpi_use_mode'] == Session::DEBUG_MODE) {
+    if ($_SESSION['glpi_use_mode'] == Session::DEBUG) {
         $PLUGIN_HOOKS['menu_toadd']['dev'] = ['plugins' => 'PluginDevMenu'];
         $PLUGIN_HOOKS['helpdesk_menu_entry']['dev'] = '#';
         $PLUGIN_HOOKS['helpdesk_menu_entry_icon']['dev'] = 'fas fa-tools';
@@ -33,12 +36,7 @@ function plugin_init_dev()
         Plugin::registerClass(PluginDevClassviewer::class, [
             'addtabon' => get_declared_classes()
         ]);
-        $PLUGIN_HOOKS[\Glpi\Plugin\Hooks::DEBUG_TABS]['dev'] = [
-            [
-                'title' => 'Profiler',
-                'display_callable' => 'PluginDevProfiler::showDebugTab'
-            ]
-        ];
+        // Add debug tabs here if needed, using standard GLPI plugin hooks
     }
 }
 

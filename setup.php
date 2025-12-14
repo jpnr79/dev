@@ -26,7 +26,8 @@ function plugin_init_dev()
     $PLUGIN_HOOKS['add_javascript']['dev'][] = 'js/dev.js';
     $PLUGIN_HOOKS['add_javascript']['dev'][] = 'js/dom_validation.js';
 
-    if ($_SESSION['glpi_use_mode'] == Session::DEBUG) {
+    // GLPI Session::DEBUG is usually 2, but Session::DEBUG constant may not exist in newer GLPI
+    if (isset($_SESSION['glpi_use_mode']) && $_SESSION['glpi_use_mode'] == 2) {
         $PLUGIN_HOOKS['menu_toadd']['dev'] = ['plugins' => 'PluginDevMenu'];
         $PLUGIN_HOOKS['helpdesk_menu_entry']['dev'] = '#';
         $PLUGIN_HOOKS['helpdesk_menu_entry_icon']['dev'] = 'fas fa-tools';

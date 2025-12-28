@@ -1,11 +1,8 @@
-// Required by GLPI: plugin_version_dev alias
-function plugin_version_dev() {
-    return plugin_version_dev();
-}
+
+<?php
 if (!defined('GLPI_ROOT')) {
     include('../../../inc/includes.php');
 }
-<?php
 
 define('PLUGIN_DEV_VERSION', '2.1.0');
 define('PLUGIN_DEV_MIN_GLPI', '11.0.0');

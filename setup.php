@@ -65,47 +65,67 @@ function plugin_version_dev()
 
 function plugin_dev_check_prerequisites()
 {
-    if (!method_exists('Plugin', 'checkGlpiVersion')) {
-        $version = '';
-        if (defined('GLPI_VERSION')) {
-            $version = preg_replace('/^((\d+\.?)+).*$/', '$1', GLPI_VERSION);
-        }
-        $matchMinGlpiReq = true;
-        $matchMaxGlpiReq = true;
-        if (!empty($version)) {
-            $matchMinGlpiReq = version_compare($version, PLUGIN_DEV_MIN_GLPI, '>=');
-            $matchMaxGlpiReq = version_compare($version, PLUGIN_DEV_MAX_GLPI, '<');
-        }
-        // PHP version check
-        if (version_compare(PHP_VERSION, '8.4.0', '<')) {
-            Toolbox::logInFile('dev', sprintf(
-                'ERROR [%s:%s] PHP version too low: %s, user=%s',
-                __FILE__, __FUNCTION__, PHP_VERSION, $_SESSION['glpiname'] ?? 'unknown'
-            ));
-            echo 'This plugin requires PHP >= 8.4.0.';
-            return false;
-        }
-        if (!$matchMinGlpiReq || !$matchMaxGlpiReq) {
-            Toolbox::logInFile('dev', sprintf(
-                'ERROR [%s:%s] GLPI version not in range: %s, user=%s',
-                __FILE__, __FUNCTION__, $version, $_SESSION['glpiname'] ?? 'unknown'
-            ));
-            echo vsprintf(
-                'This plugin requires GLPI >= %1$s and < %2$s.',
-                [
-                    PLUGIN_DEV_MIN_GLPI,
-                    PLUGIN_DEV_MAX_GLPI,
-                ]
-            );
-            return false;
-        }
+    // GLPI 11+ compatible version check: read from version file
+    $glpi_version = 'unknown';
+    $version_file = dirname(__DIR__, 2) . '/version';
+    if (file_exists($version_file)) {
+        $glpi_version = trim(file_get_contents($version_file));
+    }
+    $matchMinGlpiReq = version_compare($glpi_version, PLUGIN_DEV_MIN_GLPI, '>=');
+    $matchMaxGlpiReq = version_compare($glpi_version, PLUGIN_DEV_MAX_GLPI, '<');
+    // PHP version check
+    if (version_compare(PHP_VERSION, '8.4.0', '<')) {
+        $msg = sprintf(
+            'ERROR [%s:%s] PHP version too low: %s, user=%s',
+            __FILE__, __FUNCTION__, PHP_VERSION, $_SESSION['glpiname'] ?? 'unknown'
+        );
+        try {
+            if (class_exists('Toolbox') && method_exists('Toolbox', 'logInFile')) {
+                @Toolbox::logInFile('dev', $msg);
+            } else {
+                $logfile = __DIR__ . '/dev_error.log';
+                file_put_contents($logfile, $msg . "\n", FILE_APPEND);
+            }
+        } catch (\Throwable $e) {}
+        echo 'This plugin requires PHP >= 8.4.0.';
+        return false;
+    }
+    if (!$matchMinGlpiReq || !$matchMaxGlpiReq) {
+        $msg = sprintf(
+            'ERROR [%s:%s] GLPI version not in range: %s, user=%s',
+            __FILE__, __FUNCTION__, $glpi_version, $_SESSION['glpiname'] ?? 'unknown'
+        );
+        try {
+            if (class_exists('Toolbox') && method_exists('Toolbox', 'logInFile')) {
+                @Toolbox::logInFile('dev', $msg);
+            } else {
+                $logfile = __DIR__ . '/dev_error.log';
+                file_put_contents($logfile, $msg . "\n", FILE_APPEND);
+            }
+        } catch (\Throwable $e) {}
+        echo vsprintf(
+            'This plugin requires GLPI >= %1$s and < %2$s.',
+            [
+                PLUGIN_DEV_MIN_GLPI,
+                PLUGIN_DEV_MAX_GLPI,
+            ]
+        );
+        return false;
     }
 
     if (!is_readable(__DIR__ . '/vendor/autoload.php') || !is_file(__DIR__ . '/vendor/autoload.php')) {
-        Toolbox::logInFile('dev', sprintf(
+        $msg = sprintf(
             'ERROR [%s:%s] vendor/autoload.php missing or unreadable, user=%s',
             __FILE__, __FUNCTION__, $_SESSION['glpiname'] ?? 'unknown'
-        ));
+        );
+        try {
+            if (class_exists('Toolbox') && method_exists('Toolbox', 'logInFile')) {
+                @Toolbox::logInFile('dev', $msg);
+            } else {
+                $logfile = __DIR__ . '/dev_error.log';
+                file_put_contents($logfile, $msg . "\n", FILE_APPEND);
+            }
+        } catch (\Throwable $e) {}
         echo "Run composer install --no-dev in the dev plugin directory<br>";
         return false;
     }

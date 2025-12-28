@@ -78,10 +78,18 @@ function plugin_dev_check_prerequisites()
         }
         // PHP version check
         if (version_compare(PHP_VERSION, '8.4.0', '<')) {
+            Toolbox::logInFile('dev', sprintf(
+                'ERROR [%s:%s] PHP version too low: %s, user=%s',
+                __FILE__, __FUNCTION__, PHP_VERSION, $_SESSION['glpiname'] ?? 'unknown'
+            ));
             echo 'This plugin requires PHP >= 8.4.0.';
             return false;
         }
         if (!$matchMinGlpiReq || !$matchMaxGlpiReq) {
+            Toolbox::logInFile('dev', sprintf(
+                'ERROR [%s:%s] GLPI version not in range: %s, user=%s',
+                __FILE__, __FUNCTION__, $version, $_SESSION['glpiname'] ?? 'unknown'
+            ));
             echo vsprintf(
                 'This plugin requires GLPI >= %1$s and < %2$s.',
                 [
@@ -94,6 +102,10 @@ function plugin_dev_check_prerequisites()
     }
 
     if (!is_readable(__DIR__ . '/vendor/autoload.php') || !is_file(__DIR__ . '/vendor/autoload.php')) {
+        Toolbox::logInFile('dev', sprintf(
+            'ERROR [%s:%s] vendor/autoload.php missing or unreadable, user=%s',
+            __FILE__, __FUNCTION__, $_SESSION['glpiname'] ?? 'unknown'
+        ));
         echo "Run composer install --no-dev in the dev plugin directory<br>";
         return false;
     }

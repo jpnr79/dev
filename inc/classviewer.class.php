@@ -16,6 +16,10 @@ class PluginDevClassviewer extends CommonGLPI
         try {
             $options = Search::getOptions($item::getType());
         } catch (Exception $e) {
+            Toolbox::logInFile('dev', sprintf(
+                'ERROR [%s:%s] Exception: %s, user=%s',
+                __FILE__, __FUNCTION__, $e->getMessage(), $_SESSION['glpiname'] ?? 'unknown'
+            ));
             $options = [];
         }
         $options = array_filter($options, static function ($k) {
@@ -117,6 +121,10 @@ class PluginDevClassviewer extends CommonGLPI
 
             return $unlinked_searchopts;
         } catch (Exception $e) {
+            Toolbox::logInFile('dev', sprintf(
+                'ERROR [%s:%s] Exception: %s, user=%s',
+                __FILE__, __FUNCTION__, $e->getMessage(), $_SESSION['glpiname'] ?? 'unknown'
+            ));
             return [];
         }
     }
@@ -146,6 +154,10 @@ class PluginDevClassviewer extends CommonGLPI
             });
             return $missing_searchopts;
         } catch (Exception $e) {
+            Toolbox::logInFile('dev', sprintf(
+                'ERROR [%s:%s] Exception: %s, user=%s',
+                __FILE__, __FUNCTION__, $e->getMessage(), $_SESSION['glpiname'] ?? 'unknown'
+            ));
             return [];
         }
     }

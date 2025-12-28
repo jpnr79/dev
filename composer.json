@@ -1,4 +1,8 @@
 {
+    "name": "jpnr79/dev",
+    "description": "GLPI Development Helper plugin",
+    "type": "project",
+    "license": "GPL-2.0-or-later",
     "repositories": [
         {
             "type": "vcs",
@@ -15,5 +19,10 @@
     "require-dev": {
         "nette/php-generator": "^3.4",
         "glpi-project/tools": "dev-debug/master"
+    },
+    "autoload": {
+        "psr-4": {
+            "GlpiPlugin\\Dev\\": "inc/"
+        }
     }
 }

@@ -66,7 +66,7 @@ function plugin_version_dev()
 function plugin_dev_check_prerequisites()
 {
     if (!method_exists('Plugin', 'checkGlpiVersion')) {
-        $version = preg_replace('/^((\d+\.?)+).*$/', '$1', GLPI_VERSION);
+        $version = preg_replace('/^((\d+\.?)+).*$/', '$1', GLPI_VERSION ?? '');
         $matchMinGlpiReq = version_compare($version, PLUGIN_DEV_MIN_GLPI, '>=');
         $matchMaxGlpiReq = version_compare($version, PLUGIN_DEV_MAX_GLPI, '<');
         // PHP version check

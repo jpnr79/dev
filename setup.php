@@ -65,11 +65,13 @@ function plugin_version_dev()
 
 function plugin_dev_check_prerequisites()
 {
-    // GLPI 11+ compatible version check: read from version file
+    // GLPI 11+ compatible version check: read from version file or fallback to GLPI_VERSION
     $glpi_version = 'unknown';
     $version_file = dirname(__DIR__, 2) . '/version';
-    if (file_exists($version_file)) {
+    if (is_file($version_file)) {
         $glpi_version = trim(file_get_contents($version_file));
+    } elseif (defined('GLPI_VERSION')) {
+        $glpi_version = GLPI_VERSION;
     }
     $matchMinGlpiReq = version_compare($glpi_version, PLUGIN_DEV_MIN_GLPI, '>=');
     $matchMaxGlpiReq = version_compare($glpi_version, PLUGIN_DEV_MAX_GLPI, '<');
